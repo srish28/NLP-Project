@@ -8,8 +8,6 @@ import numpy as np
 from sklearn.naive_bayes import MultinomialNB
 import pickle
 from sklearn import cross_validation
-from sklearn import svm
-
 
 train = pd.read_csv("mergedSet.tsv", header = 0, delimiter = "\t", quoting = 3)
 
@@ -77,9 +75,11 @@ f.close()
 X = trainDataFeatures
 y = train["sentiment"]
 
+skf = cross_validation.StratifiedKFold(y, n_folds = 10)
+for train_index, test_index in skf:
+	print "TRAIN: ",train_index
+	print "TEST: ", test_index
 
-cvmodel = svm.SVC(kernel = 'linear', C = 1)
-
-scores = cross_validation.cross_val_score(cvmodel, X, y, cv=cross_validation.StratifiedKFold(y, 10))
+scores = cross_validation.cross_val_score(clf, X, y, cv=skf)
 print "Scores : ",scores
 print("Average Accuracy: %f" % (scores.mean()))

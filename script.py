@@ -9,7 +9,7 @@ from sklearn.naive_bayes import MultinomialNB
 import pickle
 from sklearn import cross_validation
 
-train = pd.read_csv("mergedSet.tsv", header = 0, delimiter = "\t", quoting = 3)
+train = pd.read_csv("data.tsv", header = 0, delimiter = "\t", quoting = 3)
 
 
 

@@ -1,3 +1,5 @@
+#STAGE 1
+
 import pandas as pd
 from bs4 import BeautifulSoup
 import nltk
@@ -9,7 +11,7 @@ from sklearn.naive_bayes import MultinomialNB
 import pickle
 from sklearn import cross_validation
 
-train = pd.read_csv("data.tsv", header = 0, delimiter = "\t", quoting = 3)
+train = pd.read_csv("mergedSet.tsv", header = 0, delimiter = "\t", quoting = 3)
 
 
 
@@ -76,10 +78,43 @@ X = trainDataFeatures
 y = train["sentiment"]
 
 skf = cross_validation.StratifiedKFold(y, n_folds = 10)
-for train_index, test_index in skf:
-	print "TRAIN: ",train_index
-	print "TEST: ", test_index
+###
+#for train_index, test_index in skf:
+#	print "TRAIN: ",train_index
+#	print "TEST: ", test_index
+#
 
 scores = cross_validation.cross_val_score(clf, X, y, cv=skf)
+print "UNIGRAM"
 print "Scores : ",scores
 print("Average Accuracy: %f" % (scores.mean()))
+
+
+#STAGE 2
+bigram_vectorizer = CountVectorizer(ngram_range=(1,2), token_pattern=r'\b\w+\b', min_df = 3)
+
+trainDataFeatures_bigram = bigram_vectorizer.fit_transform(clean_list)
+trainDataFeatures_bigram = trainDataFeatures_bigram.toarray()
+
+vocabulary_bigram = bigram_vectorizer.get_feature_names()
+
+f = open('vocabulary_bigram.txt' , 'w')
+for v in vocabulary_bigram:
+    f.write(v + '\n')
+    
+f.close()
+
+
+
+
+#10 fold cross validation
+X = trainDataFeatures_bigram
+y = train["sentiment"]
+
+skf = cross_validation.StratifiedKFold(y, n_folds = 10)
+
+scores = cross_validation.cross_val_score(clf, X, y, cv=skf)
+print "BIGRAM"
+print "Scores : ",scores
+print("Average Accuracy: %f" % (scores.mean()))
+
